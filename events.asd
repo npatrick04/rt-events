@@ -6,6 +6,8 @@
   :license "Specify license here"
   :depends-on (#:bordeaux-threads)
   :serial t
-  :components ((:file "package")
-               (:file "events")))
+  :components ((:module "src"
+			:components
+			((:file "package")
+			 (:file "events")))))
 
