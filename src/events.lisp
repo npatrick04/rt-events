@@ -1,4 +1,4 @@
-(in-package #:events)
+(in-package #:rt-events)
 
 (defmacro define-constant (name value &optional doc)
   (declare (optimize debug))

@@ -1,9 +1,11 @@
 ;;;; events.asd
 
-(asdf:defsystem #:events
-  :description "Describe events here"
-  :author "Your Name <your.name@example.com>"
-  :license "Specify license here"
+(asdf:defsystem #:rt-events
+  :description "A simple real-time events API."
+  :long-description "This package provides a simple way to communicate
+  event occurances between different threads."
+  :author "Nick Patrick <npatrick04@gmail.com>"
+  :license "MIT"
   :depends-on (#:bordeaux-threads)
   :serial t
   :components ((:module "src"

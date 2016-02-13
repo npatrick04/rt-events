@@ -1,6 +1,6 @@
 ;;;; package.lisp
 
-(defpackage #:events
+(defpackage #:rt-events
   (:use #:cl)
   (:export +max-events+
 	   +all-events+
