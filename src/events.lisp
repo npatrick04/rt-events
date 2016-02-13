@@ -77,33 +77,45 @@
 	  :initform (bt:make-condition-variable))))
 
 (defgeneric send (event set)
-  (:documentation "Send an event set to an event object.  If a blocked
-  thread's event condition is satisfied by this event set, then it
-  will be unblocked.  If the event condition is not satisfied and a
-  thread is pending on it, then the events satisfied are updated in
-  the event object and the thread is left pending.  If a thread is not
-  pending on the event object, then the events are left pending."))
+  (:documentation "Send an event to an event object.  If a blocked
+  thread's event condition is satisfied by this event, then it
+  will be unblocked.  
+
+  If the event condition is not satisfied and a thread is pending on
+  it, then the events satisfied are updated in the event object and
+  the thread is left pending.  If a thread is not pending on the event
+  object, then the events are updated.
+
+  Send returns set."))
+
 (defgeneric receive (event set &key timeout condition-type)
-  (:documentation "Attempt to receive an event condition specified by
-  SET.  The TIMEOUT parameter is used to specify whether or not the
-  thread will wait for the event condition to be satisfied.  :ANY and
-  :ALL are used in the CONDITION-TYPE to specify whether a single
-  event or the complete event set is necessary to satisfy the event
-  condition.  When the event condition is met, the return value will
-  be the value corresponding to the events in SET that were satisfied.
+  (:documentation "Attempt to receive an event condition specified by SET.  
 
-  If pending events satisfy the event condition, then the return value
-  is the satisfied events, and the pending events that were satisfied
-  are cleared.  If the event condition is not satisfied and :NO-WAIT
-  is specified in TIMEOUT, then the return value is :UNSATISFIED.  If
-  the event condition is not satisfied and :WAIT-FOREVER is specified
-  in TIMEOUT, then the thread will block waiting for the event
-  condition.  If the thread must wait for the event condition to be
-  satisfied, then a real value in the timeout parameter is used to
-  specify the maximum duration to wait.
+  A CONDITION-TYPE of :ANY and :ALL are used to specify whether a
+  single event in the set or the complete event set is necessary to
+  satisfy the event condition.  
 
-  If a timeout is specified, and the thread waits for the specified
-  duration without an event, the return value will be :TIMEOUT."))
+  The TIMEOUT parameter is used to specify whether or not the
+  thread will wait for the event condition to be satisfied.  When
+  TIMEOUT is set to :NO-WAIT, the calling thread will evaluate the
+  pending events, returning :UNSATISFIED when the condition is not
+  met.  
+
+  When TIMEOUT is :WAIT-FOREVER (default), the calling thread will
+  become blocked if the pending events do not satisfy the event
+  condition set.  It will remain blocked until a send is performed on
+  the set that satisfies the event condition.
+
+  When the event condition is met, the return value will be the value
+  corresponding to the events in SET that were satisfied, and the
+  pending events that were satisfied are cleared.  If the thread must
+  wait for the event condition to be satisfied, then a real value in
+  the TIMEOUT parameter is used to specify the maximum duration to
+  wait.
+
+  If a timeout is encountered, the BORDEAUX-THREADS:TIMEOUT
+  condition will be raised.  The RETURN-TIMEOUT restart may be used to
+  instead cause a timeout to result in a return value of :TIMEOUT."))
 
 (defun condition-met (events waiting-for type)
   (let ((result (logand events waiting-for)))
@@ -166,8 +178,15 @@
   (declare (type (or keyword real) timeout))
   (assert (plusp set))
   (if (realp timeout)
-      (handler-case
+      (restart-case
           (bt:with-timeout (timeout)
             (%receive e set timeout condition-type))
-        (bt:timeout () :timeout))
+        (return-timeout () :timeout))
       (%receive e set timeout condition-type)))
+
+(defun return-timeout (c)
+  "Binding RETURN-TIMEOUT to the BORDEAUX-THREADS:TIMEOUT condition
+results in the return value :TIMEOUT when receiving an event set."
+  (declare (ignore c))
+  (let ((restart (find-restart 'return-timeout)))
+    (when restart (invoke-restart restart))))

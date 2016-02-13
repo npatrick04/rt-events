@@ -7,11 +7,16 @@
 	   +no-events+
 
 	   event
-	   wait-type-t
-	   *default-wait-type*
+	   condition-type-t
+	   *default-condition-type*
 
            pop-event
+	   bit->event
+	   event-number->event
 	   
 	   send
-	   receive))
+	   receive
+
+	   ;; The timeout and restart
+	   return-timeout))
 
