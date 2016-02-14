@@ -2,7 +2,7 @@
 
 `rt-events` is a simple event notification utility for multi-threaded applications.  It is designed to provide an event interface similar to that provided by VxWorks, RTEMS, or other Real-Time Operating Systems.  This implementation uses a mutex and condition variable, so it cannot be used in an interrupt context as you'd get with a RTOS event manager.  That said, the implementation is simple enough.  Your mileage may vary.
 
-The implementation depends only on Bordeaux Threads, and so is compatible wherever that is.  Thus far it's been tested on SBCL.
+The implementation depends only on Bordeaux Threads, and so is compatible wherever that is.  Thus far it's been tested on SBCL and CCL on Windows and Linux.
 
 # Installation
 
