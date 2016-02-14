@@ -1,3 +1,3 @@
-(defpackage #:events.examples
-  (:use #:cl #:events)
+(defpackage #:rt-events.examples
+  (:use #:cl #:rt-events)
   (:export #:simple))

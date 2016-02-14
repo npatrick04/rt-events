@@ -11,5 +11,5 @@
   :components ((:module "src"
 			:components
 			((:file "package")
-			 (:file "events")))))
+			 (:file "rt-events")))))
 

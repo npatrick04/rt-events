@@ -26,7 +26,7 @@
     (let ((symb (intern (format nil format-string value))))
       (list
        (list 'define-constant symb (event-number->event value))
-       (list 'export (list 'quote symb) (list 'find-package :events)))))
+       (list 'export (list 'quote symb) (list 'find-package :rt-events)))))
   (defmacro define-event-set (min format-string)
     (let ((range (loop for i from min to +max-events+ collect i)))
       `(progn
