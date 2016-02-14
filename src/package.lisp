@@ -11,6 +11,7 @@
 	   *default-condition-type*
 
            pop-event
+           pop-event-index
 	   bit->event
 	   event-number->event
 	   

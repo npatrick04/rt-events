@@ -44,12 +44,25 @@
            (optimize speed))
   (event-number->event (- +max-events+ bit -1)))
 
-(defun pop-event (set)
-  "Extract the first event in the set, returning it and the remainder values."
-  (declare (type fixnum set))
-  (let ((first-event (bit->event (integer-length set))))
-    (values first-event
-            (logxor first-event set))))
+(defmacro pop-event (set)
+  "Extract the first event in the set, returning it and unsetting it
+  in the original set."
+  (let ((first-event (gensym "FIRST-EVENT")))
+    `(let ((,first-event (bit->event (integer-length ,set))))
+       (prog1 ,first-event
+	 (setf ,set (logxor ,first-event ,set))))))
+
+(defmacro pop-event-index (set)
+  "Extract the first event in the set, returning it's difference from
+  +event-1+. i.e. +event-1+ returns 0, unsetting +event-1+ in the
+  original set.  When set is +no-events+, the value returned is
+  +max-events+. "
+  (let ((first-event-bit (gensym "FIRST-EVENT-BIT"))
+	(first-event     (gensym "FIRST-EVENT")))
+    `(let* ((,first-event-bit (integer-length ,set))
+	    (,first-event (bit->event ,first-event-bit)))
+       (prog1 (- +max-events+ ,first-event-bit)
+	 (setf ,set (logxor ,first-event ,set))))))
 
 ;; The event object is the thing that manages communication of
 ;; events between threads. 

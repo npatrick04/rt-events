@@ -9,4 +9,5 @@
   :components ((:module "examples"
 			:components
 			((:file "package")
-			 (:file "simple")))))
+			 (:file "simple")
+			 (:file "dispatch")))))
